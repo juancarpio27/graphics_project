@@ -32,7 +32,7 @@
 #define outside 0
 
 //Initial camera data
-float camX=0.0, camY=2.0, camZ=85.0;
+float camX=0.0, camY=2.0, camZ=50.0;
 float rotationAngle = 0.0;
 //Mode to render the objects
 GLuint mode = GLM_SMOOTH;
@@ -85,12 +85,16 @@ GLMmodel *bench = NULL;
 GLMmodel *high_lamp = NULL;
 GLMmodel *wall_lamp = NULL;
 GLMmodel *bookcase = NULL;
+GLMmodel *car1 = NULL;
+GLMmodel *car2 = NULL;
+GLMmodel *car3 = NULL;
+GLMmodel *tree = NULL;
 
 void *Help_Font = GLUT_BITMAP_8_BY_13;
 int linestart = 10;     /* start point on y axis for text lines */
 int linespace = 20;     /* spac betwwen text lines */
 
-static GLuint texName[30];
+static GLuint texName[31];
 
 
 /*****************************************************************************/
@@ -535,26 +539,57 @@ void salaMexica () {
     drawObject(high_lamp,0.0,6,-102.5,0.0,1.0,0.0,6.0,6.0,6.0,-90.0);    
 }
 
+void drawParking(){
+    glPushMatrix();
+        print_materials(noMat,floorColor,matSpecular,100.0);
+        glTranslatef(40.0,0.0,30.0);
+        glScalef(60.0,1.0,10.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
+
+    drawObject(car1,75.0,4.0,20.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
+    drawObject(car2,99.0,4.0,34.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
+    drawObject(car3,75.0,4.0,0.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
+
+    float count = 0.0;
+    for (int i = 0; i < 5; i++){
+        drawObject(tree,15.0 + count,6.0,18.0,0.0,0.0,0.0,6.0,6.0,6.0,0.0);
+        drawObject(tree,15.0 + count,6.0,40.0,0.0,0.0,0.0,6.0,6.0,6.0,0.0);
+
+        drawObject(tree,-1*(15.0 + count),6.0,18.0,0.0,0.0,0.0,6.0,6.0,6.0,0.0);
+        drawObject(tree,-1*(15.0 + count),6.0,40.0,0.0,0.0,0.0,6.0,6.0,6.0,0.0);
+        count += 10.0;
+    }
+}
+
 /*
  * Function that draws the main structure of the museum
  */
 void drawMuseum() {
+    
 
-    glPushMatrix();
-        print_materials(green, green,green,100.0);
-        glScalef(400.0,1.0,200.0);
-        glutSolidCube(1.0);
-    glPopMatrix();
-
+    
+    
     accessoPrincipal();
     patioCentral();
-
     bibliotecaAuditorio();
+    
     salaCulturasDelGolfo();
     salaOaxaca();
     salaCulturasDelNorte();
     salaTeotihuacanaTolteca();
     salaMexica(); 
+
+
+    drawParking();
+
+    
+    glPushMatrix();
+        print_materials(noMat,green,matSpecular,100.0);
+        glTranslatef(0.0,-1.0,0.0);
+        glScalef(600.0,1.0,400.0);
+        glutSolidCube(1.0);
+    glPopMatrix();
 
     
 }
@@ -626,6 +661,10 @@ void drawPictures(){
     drawPaint(20.5,5.0,-40.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,28);
     drawPaint(37.5,5.0,-42.0,2.0,3.0,5.0,0.0,0.0,0.0,0.0,29);
 
+    //Parking
+    drawPaint(120.0,2.0,20.0,30.2,40.0,2.0,1.0,0.0,0.0,90.0,30);
+
+
 }
 
 //Objects to display in the scene
@@ -688,6 +727,22 @@ void loadObjects(){
     bookcase = glmReadOBJ("./home/bookcase.obj");
     glmUnitize(bookcase);
     glmVertexNormals(bookcase, 90.0, GL_TRUE);
+
+    car1 = glmReadOBJ("./home/concept-sedan-01v1.obj");
+    glmUnitize(car1 );
+    glmVertexNormals(car1 , 90.0, GL_TRUE);
+
+    car2 = glmReadOBJ("./home/fordFocus.obj");
+    glmUnitize(car2 );
+    glmVertexNormals(car2 , 90.0, GL_TRUE);
+
+    car3 = glmReadOBJ("./home/peugeot-308.obj");
+    glmUnitize(car3 );
+    glmVertexNormals(car3 , 90.0, GL_TRUE);
+
+    tree = glmReadOBJ("./home/quakingAspen.obj");
+    glmUnitize(tree );
+    glmVertexNormals(tree , 90.0, GL_TRUE);
 }
 
 void loadtexture(int index, char file[]){
@@ -712,7 +767,7 @@ void loadtexture(int index, char file[]){
  void loadPictures(){
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glGenTextures(29, texName);
+    glGenTextures(30, texName);
 
     loadtexture(0,"images/gioconda.jpg");
     loadtexture(1,"images/venus.jpg");
@@ -749,6 +804,7 @@ void loadtexture(int index, char file[]){
 
     loadtexture(29,"images/hojas.jpg");
     loadtexture(28,"images/rara.jpg");
+    loadtexture(30,"images/parking.jpg");
 
 
  }
