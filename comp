@@ -9,4 +9,4 @@ ar cru libglm.a glmimg_devil.o glmimg.o glmimg_sdl.o glm.o glmimg_jpg.o glmimg_p
 # Si es Linux:
 #gcc -o glmLoad  glutobj.o libglm.a  -lGL -lGLU -lglut -ljpeg -lpng -lIL -lm
 # Si es Mac comentar la anterior línea y descomentar la siguiente:
-gcc -o glmLoad  glutobj.o libglm.a -L/usr/local/lib -framework OpenGL -framework GLUT -framework CoreFoundation /usr/local/lib/libSOIL.a -I/usr/local/include/ -ljpeg -lpng -lIL -lm -w 
+gcc -o glmLoad  glutobj.o libglm.a -L/usr/local/lib -framework OpenGL -framework GLUT -framework CoreFoundation /usr/local/lib/libSOIL.a -I/usr/local/include/ -ljpeg -lpng -lIL -lm -w
