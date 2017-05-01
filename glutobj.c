@@ -84,6 +84,7 @@ GLMmodel *plant = NULL;
 GLMmodel *bench = NULL;
 GLMmodel *high_lamp = NULL;
 GLMmodel *wall_lamp = NULL;
+GLMmodel *bookcase = NULL;
 
 void *Help_Font = GLUT_BITMAP_8_BY_13;
 int linestart = 10;     /* start point on y axis for text lines */
@@ -377,6 +378,26 @@ void accessoPrincipal() {
 
 }
 
+void paintStatue(float t_x, float t_y, float t_z){
+     glPushMatrix();
+        glTranslatef(t_x,t_y,t_z);
+        glScalef(1.0,1.3,1.0);
+        glutSolidCube(1.0);
+        glPushMatrix();
+            print_materials(blue,blue,blue,100.0);
+            glScalef(1.0,0.5,1.0);
+            glTranslatef(0.0,1.5,0.0);
+
+            glEnable (GL_BLEND);
+            glDepthMask (GL_FALSE);
+            glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+            glutSolidCube(1.0);
+            glDepthMask (GL_TRUE);
+            glDisable (GL_BLEND);
+        glPopMatrix();
+    glPopMatrix();
+}
+
 /*-- MAIN ROOM --*/
 
 /*
@@ -387,83 +408,17 @@ void bibliotecaAuditorio() {
     drawDoor(1.0,0.0,2.5,-10.0,0.0,0.0,0.0,7.0,3.0,0.5,0.0);
     //door to museum
     drawDoor(1.0,0.0,2.5,10.0,0.0,0.0,0.0,4.0,3.0,0.5,0.0);
-
     drawRoom(0.0,0.0,0.0,4.0,1.0,1.0,0.0,0.0,0.0,0.0);  
 
-    glPushMatrix();
-        glTranslatef(-5.0,1.0,0.5);
-        glScalef(1.0,1.3,1.0);
-        glutSolidCube(1.0);
-        glPushMatrix();
-            print_materials(blue,blue,blue,100.0);
-            glScalef(1.0,0.5,1.0);
-            glTranslatef(0.0,1.5,0.0);
+    paintStatue(-5.0,1.0,0.5);
+    paintStatue(-5.0,1.0,-1.5);
+    paintStatue(5.0,1.0,-1.5);
+    paintStatue(5.0,1.0,0.5);
+    
 
-            glEnable (GL_BLEND);
-            glDepthMask (GL_FALSE);
-            glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-            glutSolidCube(1.0);
-            glDepthMask (GL_TRUE);
-            glDisable (GL_BLEND);
-        glPopMatrix();
-    glPopMatrix();
-
-    glPushMatrix();
-        glTranslatef(-5.0,1.0,-1.5);
-        glScalef(1.0,1.3,1.0);
-        print_materials(noMat, wallColor, matSpecular,100.0);
-        glutSolidCube(1.0);
-        glPushMatrix();
-            print_materials(blue,blue,blue,100.0);
-            glScalef(1.0,0.5,1.0);
-            glTranslatef(0.0,1.5,0.0);
-
-            glEnable (GL_BLEND);
-            glDepthMask (GL_FALSE);
-            glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-            glutSolidCube(1.0);
-            glDepthMask (GL_TRUE);
-            glDisable (GL_BLEND);
-        glPopMatrix();
-    glPopMatrix();
-
-    glPushMatrix();
-        glTranslatef(5.0,1.0,-1.5);
-        glScalef(1.0,1.3,1.0);
-        print_materials(noMat, wallColor, matSpecular,100.0);
-        glutSolidCube(1.0);
-        glPushMatrix();
-            print_materials(blue,blue,blue,100.0);
-            glScalef(1.0,0.5,1.0);
-            glTranslatef(0.0,1.5,0.0);
-
-            glEnable (GL_BLEND);
-            glDepthMask (GL_FALSE);
-            glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-            glutSolidCube(1.0);
-            glDepthMask (GL_TRUE);
-            glDisable (GL_BLEND);
-        glPopMatrix();
-    glPopMatrix();
-
-    glPushMatrix();
-        glTranslatef(5.0,1.0,0.5);
-        glScalef(1.0,1.3,1.0);
-        print_materials(noMat, wallColor, matSpecular,100.0);
-        glutSolidCube(1.0);
-        glPushMatrix();
-            print_materials(blue,blue,blue,100.0);
-            glScalef(1.0,0.5,1.0);
-            glTranslatef(0.0,1.5,0.0);
-
-            glEnable (GL_BLEND);
-            glDepthMask (GL_FALSE);
-            glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-            glutSolidCube(1.0);
-            glDepthMask (GL_TRUE);
-            glDisable (GL_BLEND);
-        glPopMatrix();
-    glPopMatrix();
+    drawObject(bookcase,-38.0,5.0,0.0,0.0,1.0,0.0,25.0,12.0,12.0,90.0);
+    drawObject(bookcase,-29.0,5.0,-8.0,0.0,1.0,0.0,25.0,12.0,12.0,0.0);
+    drawObject(bookcase,-24.0,5.0,8.0,0.0,1.0,0.0,40.0,12.0,12.0,0.0);
  
 }
 
@@ -577,9 +532,7 @@ void salaMexica () {
     drawObject(bench,10.0,1.0,-105.0,0.0,0.0,0.0,2.0,2.0,2.0,0.0);
     drawObject(bench,10.0,1.0,-100.0,0.0,1.0,0.0,2.0,2.0,2.0,180.0);
 
-    drawObject(high_lamp,0.0,6,-102.5,0.0,1.0,0.0,6.0,6.0,6.0,-90.0);
-
-    
+    drawObject(high_lamp,0.0,6,-102.5,0.0,1.0,0.0,6.0,6.0,6.0,-90.0);    
 }
 
 /*
@@ -588,8 +541,8 @@ void salaMexica () {
 void drawMuseum() {
 
     glPushMatrix();
-        print_materials(noMat, green,matSpecular,100.0);
-        glScalef(400.0,0.0,200.0);
+        print_materials(green, green,green,100.0);
+        glScalef(400.0,1.0,200.0);
         glutSolidCube(1.0);
     glPopMatrix();
 
@@ -708,9 +661,6 @@ void display(void)
         drawMuseum();
         drawPictures();
         
-
-
-
     glPopMatrix();
 
     HelpDisplay(ww, wh);
@@ -734,6 +684,10 @@ void loadObjects(){
     wall_lamp = glmReadOBJ("./home/wall-spotlight.obj");
     glmUnitize(wall_lamp);
     glmVertexNormals(wall_lamp, 90.0, GL_TRUE);
+
+    bookcase = glmReadOBJ("./home/bookcase.obj");
+    glmUnitize(bookcase);
+    glmVertexNormals(bookcase, 90.0, GL_TRUE);
 }
 
 void loadtexture(int index, char file[]){
