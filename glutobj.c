@@ -1,5 +1,5 @@
 /*
- * Proyecto Final, Museo de Antropologia 
+ * Proyecto Final, Museo de antropologia / artistic museum
  * Juan Andres Carpio A01021224
  * César Millán A01371813
  */
@@ -23,7 +23,11 @@
 #include "glm.h"
 #include "SOIL.h"
 
-//Constants for boolean management
+/*****
+ ** 
+ **  Constants
+ ** 
+ *****/
 #define bool int
 #define true 1
 #define false 0
@@ -31,11 +35,14 @@
 #define inside 1
 #define outside 0
 
-//Initial camera data
+/*****
+ ** 
+ **  Camera data
+ ** 
+ *****/
 float camX=0.0, camY=2.0, camZ=50.0;
 float rotationAngle = 0.0;
-//Mode to render the objects
-GLuint mode = GLM_SMOOTH;
+
 
 /*****
  ** 
@@ -45,35 +52,35 @@ GLuint mode = GLM_SMOOTH;
 int SOLID = true;
 int show_info = true;
 int VIEW_MODE =  outside;
-int ww, wh;     
+
+/*****
+ ** 
+ **  Data
+ ** 
+ *****/
+GLuint mode = GLM_SMOOTH;
+GLUquadric* qobj;
+int ww, wh;
+void *Help_Font = GLUT_BITMAP_8_BY_13;
+int linestart = 10;     /* start point on y axis for text lines */
+int linespace = 20;     /* spac betwwen text lines */  
+static GLuint texName[31];   
 
 /*****
  ** 
  **  Museum colors
  ** 
  *****/
-//Museum walls
-GLfloat wallColor [] = { 0.827, 0.827, 0.827, 0.65};
-//Museum floors
-GLfloat floorColor [] = { 0.663, 0.663, 0.663, 0.6};
-//Museum Paraguas
-GLfloat paraguasColor []  = {0.07, 0.24, 0.22, 0.6};
-//Museum Doors
-GLfloat doorColor []  = {0.74, 0.33, 0.18, 0.65};
-//Museum bench
-GLfloat benchColor []  = {0.74, 0.33, 0.18, 0.6};
-//Other materials
-GLfloat noMat[] = {0.0,0.0,0.0, 0.0};
-GLfloat matSpecular[] = {1.0, 1.0, 1.0, 1.0};
-//Blue materials
-GLfloat blue[] = {0.118, 0.565, 1.000,0.4};
-GLfloat light_blue[] = {0.529, 0.808, 0.980,0.4};
-//Green
-GLfloat green[] = {0.133, 0.545, 0.133, 0.6};
-
-//Cylinder
-GLUquadric* qobj;
-
+GLfloat wallColor [] = { 0.827, 0.827, 0.827, 0.65}; //gray wall
+GLfloat floorColor [] = { 0.663, 0.663, 0.663, 0.6}; //gray floor
+GLfloat paraguasColor []  = {0.07, 0.24, 0.22, 0.6}; //dark aquamarine
+GLfloat doorColor []  = {0.74, 0.33, 0.18, 0.65}; //brown
+GLfloat benchColor []  = {0.74, 0.33, 0.18, 0.6}; //brown
+GLfloat noMat[] = {0.0,0.0,0.0, 0.0}; //black
+GLfloat matSpecular[] = {1.0, 1.0, 1.0, 1.0}; //white
+GLfloat blue[] = {0.118, 0.565, 1.000,0.4}; //blue
+GLfloat light_blue[] = {0.529, 0.808, 0.980,0.4}; //light_blue
+GLfloat green[] = {0.133, 0.545, 0.133, 0.6}; //green
 
 /*****
  ** 
@@ -90,58 +97,108 @@ GLMmodel *car2 = NULL;
 GLMmodel *car3 = NULL;
 GLMmodel *tree = NULL;
 
-void *Help_Font = GLUT_BITMAP_8_BY_13;
-int linestart = 10;     /* start point on y axis for text lines */
-int linespace = 20;     /* spac betwwen text lines */
-
-static GLuint texName[31];
-
 
 /*****************************************************************************/
 /*Functions*******************************************************************/
 /*****************************************************************************/
 
-//Windows size function and view configuration
-void Reshape(int w, int h);
-//Objects to display in the scene
-void display(void);
-//Initial configuration
-void init(void);
-void keyboard(unsigned char key, int x, int y);
-
-/*
- * Function that sets the color of the materials 
- * ambient: array colors for ambient lights
- * diffuse: array colors for diffuse lights
- * specular: array colors for specular lights
- * s: shininess of the material
- */
-void print_materials(GLfloat * ambient, GLfloat * diffuse, GLfloat * specular, float s);
-
-/*
- * Function that draws a cube
- * solid: true for solid cube, false for wire cube
- * t_x,t_y,t_z: translation
- * r_x,r_y,r_z: rotation
- * s_x,s_y,s_z: scale
- * degrees: degrees of rotation
- */
-void drawCube(int solid, float t_x, float t_y, float t_z, float r_x, float r_y, float r_z,
-              float s_x, float s_y, float s_z, float degrees);
-
+/*****
+ ** 
+ **  Menu functions
+ ** 
+ *****/
 void menu(int value);
-void loadObjects();
-void LoadGLTextures();
-void drawPaint(float t_x, float t_y, float t_z, float s_x, 
-               float s_y, float s_z, float r_x, float r_y, 
-               float r_z, float degrees, int index);
-void loadtexture(int index, char file[]);
 void HelpDisplay(GLint ww, GLint wh);
 void HelpRenderBitmapString(float x, float y, void *font, char *string);
 
+/*****
+ ** 
+ **  Callback functions
+ ** 
+ *****/
+void Reshape(int w, int h);
+void keyboard(unsigned char key, int x, int y);
+
+/*****
+ ** 
+ **  Draw parts
+ ** 
+ *****/
+void drawDoor(int solid, float t_x, float t_y, float t_z, float r_x, float r_y, float r_z,
+              float s_x, float s_y, float s_z, float degrees);
+void drawBench(int solid, float t_x, float t_y, float t_z, float r_x, float r_y, float r_z,
+              float s_x, float s_y, float s_z, float degrees);
+void drawCube(int solid, float t_x, float t_y, float t_z, float r_x, float r_y, float r_z,
+              float s_x, float s_y, float s_z, float degrees);
+void drawRoom(float t_x, float t_y, float t_z, float s_x, float s_y, float s_z, float r_x, 
+              float r_y, float r_z, float degrees);
+void drawFloor(float t_x, float t_y, float t_z, float s_x, float s_y, float s_z, float r_x, 
+               float r_y, float r_z, float degrees);
+void drawObject(GLMmodel *pmodel, float t_x, float t_y, float t_z, float r_x, float r_y, float r_z,
+              float s_x, float s_y, float s_z, float degrees);
+void drawPaint(float t_x, float t_y, float t_z, float s_x, 
+               float s_y, float s_z, float r_x, float r_y, 
+               float r_z, float degrees, int index);
+
+/*****
+ ** 
+ **  Draw museum parts
+ ** 
+ *****/
+void elParaguas(); 
+void patioCentral();
+void accessoPrincipal();
+void paintStatue(float t_x, float t_y, float t_z);
+void bibliotecaAuditorio();
+void salaCulturasDelGolfo();
+void salaOaxaca();
+void salaCulturasDelNorte();
+void salaTeotihuacanaTolteca();
+void salaMexica();
+void drawParking();
+void drawMuseum();
 
 
 
+/*****
+ ** 
+ **  Objects and textures functions
+ ** 
+ *****/
+void drawPaint(float t_x, float t_y, float t_z, float s_x, 
+               float s_y, float s_z, float r_x, float r_y, 
+               float r_z, float degrees, int index);
+void drawRenascement();
+void drawImpresionism();
+void drawFrida();
+void drawCubism();
+void drawContemporary();
+void drawPictures();
+void display(void);
+void loadObjects();
+void loadObjects();
+void loadtexture(int index, char file[]);
+void loadPictures();
+void loadRenascement();
+void loadImpresionism();
+void loadFrida();
+void loadCubism();
+void loadContemporary();
+
+
+/*****
+ ** 
+ **  Initial configuration
+ ** 
+ *****/
+void init(void);
+
+/*****
+ ** 
+ **  Materials
+ ** 
+ *****/
+void print_materials(GLfloat * ambient, GLfloat * diffuse, GLfloat * specular, float s);
 
 
 /*****************************************************************************/
@@ -155,7 +212,6 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(1024, 768);	/*  Window Size If We Start In Windowed Mode */
     glutCreateWindow("Museo");
-    LoadGLTextures();
     init ();
     glutDisplayFunc(display);
     glutReshapeFunc(Reshape);
@@ -172,11 +228,13 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void LoadGLTextures() { 
- 
+/*****************************************************************************/
+/*Program Functions***********************************************************/
+/*****************************************************************************/
 
-};
-
+/*
+ * Function that executes when every option of the menu is clicked
+ */
 void menu(int value) {
     switch (value) {
         case 0:
@@ -189,15 +247,17 @@ void menu(int value) {
     glutPostRedisplay();
 }
 
-//Windows size function and view configuration
-void Reshape(int w, int h)
-{
-
+/*
+ * Window size function and view configuration
+ */
+void Reshape(int w, int h) {
+    //Data required for the help menu
     ww = w;
     wh = h;
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+    //Perspective view configuration. 0.01 near so the camera can see like an human eye
     gluPerspective(60.0, (double) w / (double) h, 0.01,1000.0);
     glMatrixMode(GL_MODELVIEW);
 }
@@ -323,7 +383,11 @@ void drawObject(GLMmodel *pmodel, float t_x, float t_y, float t_z, float r_x, fl
 
 }
 
-/*-- Museum rooms --*/
+/*****
+ ** 
+ **  Museum room
+ ** 
+ *****/
 
 /*
  * Function that draws the museum structure called "El paraguas"
@@ -342,15 +406,17 @@ void elParaguas() {
  * Function that draws the "patio central" of the museum
  */
 void patioCentral(){
-    //MAIN HALL
+    //Main hall
     drawFloor(0.0,0.0,-53.0,2.0,1.0,4.3,0.0,0.0,0.0,0.0);
     print_materials(blue, blue, blue,100.0);
+    //Transparency to the water
     glEnable (GL_BLEND);
     glDepthMask (GL_FALSE);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE);
     drawCube(1.0,0.0,1.0,-70.0,0.0,0.0,0.0,10.0,1.0,9.0,0.0);
     glDepthMask (GL_TRUE);
     glDisable (GL_BLEND);
+    //End transparency
     print_materials(noMat, floorColor, matSpecular,100.0);
     drawCube(1.0,0.0,1.0,-90.0,0.0,0.0,0.0,3.0,1.0,8.0,0.0);
     elParaguas();
@@ -368,41 +434,17 @@ void accessoPrincipal() {
     drawBench(1.0,8.0,1.0,20.0,0.0,0.0,0.0,1.0,1.0,5.0,0.0);
     drawBench(1.0,8.0,1.0,40.0,0.0,0.0,0.0,1.0,1.0,5.0,0.0);
 
+    //Draw the plants on the museum entrance
     drawObject(plant,8.0,2.5,23.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
     drawObject(plant,8.0,2.5,18.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
-
     drawObject(plant,8.0,2.5,43.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
     drawObject(plant,8.0,2.5,38.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
-
     drawObject(plant,-8.0,2.5,23.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
     drawObject(plant,-8.0,2.5,18.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
-
     drawObject(plant,-8.0,2.5,43.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
     drawObject(plant,-8.0,2.5,38.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
 
 }
-
-void paintStatue(float t_x, float t_y, float t_z){
-     glPushMatrix();
-        glTranslatef(t_x,t_y,t_z);
-        glScalef(1.0,1.3,1.0);
-        glutSolidCube(1.0);
-        glPushMatrix();
-            print_materials(blue,blue,blue,100.0);
-            glScalef(1.0,0.5,1.0);
-            glTranslatef(0.0,1.5,0.0);
-
-            glEnable (GL_BLEND);
-            glDepthMask (GL_FALSE);
-            glBlendFunc (GL_SRC_ALPHA, GL_ONE);
-            glutSolidCube(1.0);
-            glDepthMask (GL_TRUE);
-            glDisable (GL_BLEND);
-        glPopMatrix();
-    glPopMatrix();
-}
-
-/*-- MAIN ROOM --*/
 
 /*
  * Function that draws the library and the auditorium of the museum
@@ -414,19 +456,21 @@ void bibliotecaAuditorio() {
     drawDoor(1.0,0.0,2.5,10.0,0.0,0.0,0.0,4.0,3.0,0.5,0.0);
     drawRoom(0.0,0.0,0.0,4.0,1.0,1.0,0.0,0.0,0.0,0.0);  
 
+    //Draw the pedestals
     paintStatue(-5.0,1.0,0.5);
     paintStatue(-5.0,1.0,-1.5);
     paintStatue(5.0,1.0,-1.5);
     paintStatue(5.0,1.0,0.5);
     
-
+    //Draw the library
     drawObject(bookcase,-38.0,5.0,0.0,0.0,1.0,0.0,25.0,12.0,12.0,90.0);
     drawObject(bookcase,-29.0,5.0,-8.0,0.0,1.0,0.0,25.0,12.0,12.0,0.0);
     drawObject(bookcase,-24.0,5.0,8.0,0.0,1.0,0.0,40.0,12.0,12.0,0.0);
- 
 }
 
-/*-- LEFT WING --*/
+
+
+
 
 /*
  * Function that draws the "Culturas del Golfo" exhibition
@@ -434,19 +478,17 @@ void bibliotecaAuditorio() {
 void salaCulturasDelGolfo() {
     drawRoom(-30.0,0.0,-75.0,1.0,1.0,4.0,0.0,0.0,0.0,0.0);
 
-
+    //Draw benchs on the room
     drawObject(bench,-32.0,1.5,-75.0,0.0,1.0,0.0,2.0,2.0,2.0,90.0);
     drawObject(bench,-28.0,1.5,-75.0,0.0,1.0,0.0,2.0,2.0,2.0,-90.0);
-
     drawObject(bench,-32.0,1.5,-65.0,0.0,1.0,0.0,2.0,2.0,3.0,90.0);
     drawObject(bench,-28.0,1.5,-65.0,0.0,1.0,0.0,2.0,2.0,3.0,-90.0);
-
     drawObject(bench,-32.0,1.5,-55.0,0.0,1.0,0.0,2.0,2.0,2.0,90.0);
     drawObject(bench,-28.0,1.5,-55.0,0.0,1.0,0.0,2.0,2.0,2.0,-90.0);
-
     drawObject(bench,-32.0,1.5,-45.0,0.0,1.0,0.0,2.0,2.0,2.0,90.0);
     drawObject(bench,-28.0,1.5,-45.0,0.0,1.0,0.0,2.0,2.0,2.0,-90.0);
 
+    //Draw lamps
     drawObject(high_lamp,-30.0,6,-75.0,0.0,1.0,0.0,6.0,6.0,6.0,-90.0);
     drawObject(high_lamp,-30.0,6,-50.0,0.0,1.0,0.0,6.0,6.0,6.0,-90.0);
 
@@ -463,20 +505,18 @@ void salaCulturasDelGolfo() {
  */
 void salaOaxaca() {
 
-
+    //Draw objects in the room
     drawObject(bench,-30.0,1.0,-25.0,0.0,0.0,0.0,2.0,2.0,2.0,0.0);
     drawObject(bench,-30.0,1.0,-22.0,0.0,1.0,0.0,2.0,2.0,2.0,180.0);
 
     drawObject(wall_lamp,-22.0,6,-25.5,0.0,1.0,0.0,1.5,1.5,1.5,-90.0);
     drawObject(wall_lamp,-30.0,6.5,-32.0,0.0,0.0,0.0,1.5,1.5,1.5,0.0);
 
-
+    //Room structure
     drawRoom(-30.0,0.0,-25.0,1.0,1.0,1.0,0.0,0.0,0.0,0.0);
     drawDoor(1.0,-30.0,2.5,-35.0,0.0,0.0,0.0,2.0,3.0,1.2,0.0);
     drawDoor(1.0,-20.0,2.5,-25.0,0.0,0.0,0.0,0.8,3.0,2.0,0.0);
 }
-
-/*-- RIGHT WING --*/
 
 /*
  * Function that draws the "Culturas del Norte" exhibition
@@ -486,11 +526,9 @@ void salaCulturasDelNorte() {
     drawDoor(1.0,30.0,2.5,-45.0,0.0,0.0,0.0,3.0,3.0,0.8,0.0);
     drawDoor(1.0,20.0,2.5,-25.0,0.0,0.0,0.0,0.8,3.0,2.0,0.0);
 
-
+    //Draw room objects
     drawObject(bench,30.0,1.0,-25.0,0.0,0.0,0.0,2.0,2.0,2.0,0.0);
     drawObject(bench,30.0,1.0,-22.0,0.0,1.0,0.0,2.0,2.0,2.0,180.0);
-
-
     drawObject(bench,30.0,1.0,-33.0,0.0,0.0,0.0,2.0,2.0,2.0,0.0);
     drawObject(bench,30.0,1.0,-30.0,0.0,1.0,0.0,2.0,2.0,2.0,180.0);
 
@@ -505,21 +543,17 @@ void salaTeotihuacanaTolteca () {
     drawDoor(1.0,20.0,2.5,-55.0,0.0,0.0,0.0,0.8,3.0,2.0,0.0);
     drawDoor(1.0,20.0,2.5,-85.0,0.0,0.0,0.0,0.8,3.0,2.0,0.0); 
 
+    //Draw room objects
     drawObject(bench,32.0,1.5,-75.0,0.0,1.0,0.0,2.0,2.0,2.0,90.0);
     drawObject(bench,28.0,1.5,-75.0,0.0,1.0,0.0,2.0,2.0,2.0,-90.0);
-
     drawObject(bench,32.0,1.5,-65.0,0.0,1.0,0.0,2.0,2.0,3.0,90.0);
     drawObject(bench,28.0,1.5,-65.0,0.0,1.0,0.0,2.0,2.0,3.0,-90.0);
-
     drawObject(bench,32.0,1.5,-55.0,0.0,1.0,0.0,2.0,2.0,2.0,90.0);
     drawObject(bench,28.0,1.5,-55.0,0.0,1.0,0.0,2.0,2.0,2.0,-90.0);
 
     drawObject(wall_lamp,22.0,6.5,-85.5,0.0,1.0,0.0,1.5,1.5,1.5,90.0);
 
 }
-
-/*-- BACKROOM --*/
-
 /*
  * Function that draws the "Culturas del Mexica" exhibition
  */
@@ -527,30 +561,34 @@ void salaMexica () {
     drawRoom(0.0,0.0,-105.0,2.0,1.0,1.0,0.0,0.0,0.0,0.0);
     drawDoor(1.0,0.0,4.5,-95.0,0.0,0.0,0.0,2.0,3.0,0.5,0.0);
 
+    //Draw room objects
     drawObject(bench,-10.0,1.0,-105.0,0.0,0.0,0.0,2.0,2.0,2.0,0.0);
     drawObject(bench,-10.0,1.0,-100.0,0.0,1.0,0.0,2.0,2.0,2.0,180.0);
-
     drawObject(bench,0.0,1.0,-105.0,0.0,0.0,0.0,2.0,2.0,2.0,0.0);
     drawObject(bench,0.0,1.0,-100.0,0.0,1.0,0.0,2.0,2.0,2.0,180.0);
-
     drawObject(bench,10.0,1.0,-105.0,0.0,0.0,0.0,2.0,2.0,2.0,0.0);
     drawObject(bench,10.0,1.0,-100.0,0.0,1.0,0.0,2.0,2.0,2.0,180.0);
 
     drawObject(high_lamp,0.0,6,-102.5,0.0,1.0,0.0,6.0,6.0,6.0,-90.0);    
 }
 
+/*
+ * Function that draws the parking of the museum
+ */
 void drawParking(){
+    //Path from entrance to the parking
     glPushMatrix();
         print_materials(noMat,floorColor,matSpecular,100.0);
         glTranslatef(40.0,0.0,30.0);
         glScalef(60.0,1.0,10.0);
         glutSolidCube(1.0);
     glPopMatrix();
-
+    //Draw the cars
     drawObject(car1,75.0,4.0,20.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
     drawObject(car2,99.0,4.0,34.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
     drawObject(car3,75.0,4.0,0.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
 
+    //Iterate to draw the 
     float count = 0.0;
     for (int i = 0; i < 5; i++){
         drawObject(tree,15.0 + count,6.0,18.0,0.0,0.0,0.0,6.0,6.0,6.0,0.0);
@@ -567,9 +605,7 @@ void drawParking(){
  */
 void drawMuseum() {
     
-
-    
-    
+    //Draw museum rooms
     accessoPrincipal();
     patioCentral();
     bibliotecaAuditorio();
@@ -580,10 +616,9 @@ void drawMuseum() {
     salaTeotihuacanaTolteca();
     salaMexica(); 
 
-
     drawParking();
 
-    
+    //Draw museum landscape    
     glPushMatrix();
         print_materials(noMat,green,matSpecular,100.0);
         glTranslatef(0.0,-1.0,0.0);
@@ -594,17 +629,52 @@ void drawMuseum() {
     
 }
 
+/*
+ * Function that draws a pedestal and a glass protection for a statue
+ */
+void paintStatue(float t_x, float t_y, float t_z){
+     glPushMatrix();
+        //First draw the base
+        glTranslatef(t_x,t_y,t_z);
+        glScalef(1.0,1.3,1.0);
+        glutSolidCube(1.0);
+        glPushMatrix();
+            print_materials(blue,blue,blue,100.0);
+            glScalef(1.0,0.5,1.0);
+            glTranslatef(0.0,1.5,0.0);
+            //Transparency for the glass
+            glEnable (GL_BLEND);
+            glDepthMask (GL_FALSE);
+            glBlendFunc (GL_SRC_ALPHA, GL_ONE);
+            glutSolidCube(1.0);
+            glDepthMask (GL_TRUE);
+            glDisable (GL_BLEND);
+        glPopMatrix();
+    glPopMatrix();
+}
+
+
+/*
+ * Function that draws a paint in the museum
+ * pmoder: pointer to the object
+ * t_x,t_y,t_z: translation
+ * r_x,r_y,r_z: rotation
+ * s_x,s_y,s_z: scale
+ * degrees: degrees of rotation
+ * index: index of the paint in the textures array
+ */
 void drawPaint(float t_x, float t_y, float t_z, float s_x, 
                float s_y, float s_z, float r_x, float r_y, 
                float r_z, float degrees, int index){
-
+    //Enable textures
     glEnable(GL_TEXTURE_2D);
-
     glPushMatrix();
+        //Get the texture from the array
         glBindTexture(GL_TEXTURE_2D, texName[index]);
         glTranslatef(t_x,t_y,t_z);
         glRotatef(degrees,r_x,r_y,r_z);
         glScalef(s_x,s_y,s_z);
+        //Disable lighting and paint the texture in a square
         glDisable(GL_LIGHTING);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0, 1.0); glVertex3f(-2.0, -1.0, 0.0);
@@ -614,20 +684,23 @@ void drawPaint(float t_x, float t_y, float t_z, float s_x,
         glEnd();
         glEnable(GL_LIGHTING);
     glPopMatrix();
-
     glDisable(GL_TEXTURE_2D);
-
 }
 
-void drawPictures(){
-
-    //Renacimiento
+/* 
+ * Function that draws paint from the renascement room 
+ */
+void drawRenascement(){
     drawPaint(-23.0,5.0,-34.1,1.2,2.0,5.0,0.0,0.0,0.0,0.0,0);
     drawPaint(-33.0,5.0,-34.1,1.2,2.0,5.0,0.0,0.0,0.0,0.0,1);
     drawPaint(-39.5,5.0,-27.1,5.2,3.0,5.0,0.0,1.0,0.0,90.0,2);
     drawPaint(-23.0,5.0,-15.5,6.0,2.0,5.0,0.0,0.0,0.0,0.0,3);
+}
 
-    //Impresionismo
+/* 
+ * Function that draws paint from the impresionism room 
+ */
+void drawImpresionism(){
     drawPaint(-23.0,5.0,-36.0,1.2,2.0,5.0,0.0,0.0,0.0,0.0,4);
     drawPaint(-33.0,5.0,-36.0,1.2,2.0,5.0,0.0,0.0,0.0,0.0,5);
     drawPaint(-39.5,5.0,-47.1,5.2,3.0,5.0,0.0,1.0,0.0,90.0,6);
@@ -639,46 +712,68 @@ void drawPictures(){
     drawPaint(-20.5,5.0,-100.1,5.2,3.0,5.0,0.0,1.0,0.0,90.0,12);
     drawPaint(-20.5,5.0,-75.1,7.2,3.0,5.0,0.0,1.0,0.0,90.0,13);
     drawPaint(-20.5,5.0,-58.1,4.2,3.0,5.0,0.0,1.0,0.0,90.0,14);
+}
 
-    //Frida
+/* 
+ * Function that draws paint from the frida room 
+ */
+void drawFrida(){
     drawPaint(-10.0,5.0,-113.0,4.0,2.0,5.0,0.0,0.0,0.0,0.0,16);
     drawPaint(-1.0,5.0,-113.0,4.0,2.0,5.0,0.0,0.0,0.0,0.0,17);
     drawPaint(8.0,5.0,-113.0,4.0,2.0,5.0,0.0,0.0,0.0,0.0,18);
     drawPaint(17.0,5.0,-113.0,4.0,2.0,5.0,0.0,0.0,0.0,0.0,19);
     drawPaint(19.0,5.0,-113.0,4.0,2.0,5.0,0.0,1.0,0.0,90.0,15);
+}
 
-    //Cubismo
+/* 
+ * Function that draws paint from the cubism room 
+ */
+void drawCubism(){
     drawPaint(20.5,5.0,-69.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,20);
     drawPaint(20.5,5.0,-80.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,21);
     drawPaint(39.5,5.0,-95.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,22);
     drawPaint(39.5,5.0,-80.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,23);
     drawPaint(39.5,5.0,-65.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,25);
     drawPaint(35.5,5.0,-93.0,6.0,4.0,4.0,0.0,0.0,0.0,0.0,24);
+}
 
-    //Contemporaneo
-    drawPaint(39.5,5.0,-45.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,27);
+/* 
+ * Function that draws paint from the contemporary room 
+ */
+void drawContemporary(){
+   drawPaint(39.5,5.0,-45.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,27);
     drawPaint(39.5,5.0,-30.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,26);
     drawPaint(20.5,5.0,-40.0,5.2,3.0,5.0,0.0,1.0,0.0,90.0,28);
-    drawPaint(37.5,5.0,-42.0,2.0,3.0,5.0,0.0,0.0,0.0,0.0,29);
+    drawPaint(37.5,5.0,-42.0,2.0,3.0,5.0,0.0,0.0,0.0,0.0,29); 
+}
 
+/* 
+ * Function that draws the pictures of the museum
+ */ 
+void drawPictures(){
+    
+    drawRenascement();
+    drawImpresionism();
+    drawFrida();
+    drawCubism();
+    drawContemporary();    
     //Parking
     drawPaint(120.0,2.0,20.0,30.2,40.0,2.0,1.0,0.0,0.0,90.0,30);
 
-
 }
 
-//Objects to display in the scene
-void display(void)
-{
+/*
+ * Functions that display everything in the scene
+ */
+void display(void) {
 
+    //Enable light again
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
-
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
-
 
     //Mode for the obj files look good
     mode = mode | GLM_MATERIAL;
@@ -687,7 +782,7 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity (); 
     glPushMatrix();
-
+        //Focus the camera acording to the view movde
         if (VIEW_MODE == inside){
             gluLookAt (camX,camY,camZ,camX,0.0,-120.0, 0.0,1.0, 0.0); 
             //glRotatef(rotationAngle,0.0,1.0,0.0);
@@ -695,19 +790,21 @@ void display(void)
             gluLookAt (0.0,25.0,85.0,0.0,25.0,0.0,0.0,1.0, 0.0); 
             glRotatef(rotationAngle,0.0,1.0,0.0);
         }
-
         //Function to draw the museum structure
         drawMuseum();
         drawPictures();
-        
-    glPopMatrix();
 
+    glPopMatrix();
+    //Show the help
     HelpDisplay(ww, wh);
     glutSwapBuffers();  
 }
 
+/*
+ * Function that loads obj files 
+ */
 void loadObjects(){
-   //Read objects
+    //Read objects
     plant = glmReadOBJ("./home/maceta.obj");
     glmUnitize(plant);
     glmVertexNormals(plant, 90.0, GL_TRUE); 
@@ -745,6 +842,12 @@ void loadObjects(){
     glmVertexNormals(tree , 90.0, GL_TRUE);
 }
 
+/*
+ * Function that loads a texture from image file and asign it to a position
+ * in the texture array
+ * index: position in the texture array
+ * file: name of the file of the image
+ */
 void loadtexture(int index, char file[]){
 
     glEnable(GL_TEXTURE_2D);
@@ -763,17 +866,20 @@ void loadtexture(int index, char file[]){
 
 }
 
-
- void loadPictures(){
-
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glGenTextures(30, texName);
-
+/* 
+ * Function that loads paint from the renascement room 
+ */
+void loadRenascement(){
     loadtexture(0,"images/gioconda.jpg");
     loadtexture(1,"images/venus.jpg");
     loadtexture(2,"images/ultima_cena.jpg");
     loadtexture(3,"images/dios.jpg");
+}
 
+/* 
+ * Function that loads paint from the impresionism room 
+ */
+void loadImpresionism(){
     loadtexture(4,"images/amanecer.jpg");
     loadtexture(5,"images/ninos.jpg");
     loadtexture(6,"images/noche.jpg");
@@ -785,34 +891,64 @@ void loadtexture(int index, char file[]){
     loadtexture(12,"images/bote.jpg");
     loadtexture(13,"images/puente.jpg");
     loadtexture(14,"images/paisaje.png");
+}
 
+/* 
+ * Function that loads paint from the frida room 
+ */
+void loadFrida(){
     loadtexture(15,"images/frutas2.jpg");
     loadtexture(16,"images/frida.jpeg");
     loadtexture(17,"images/frutas.jpg");
     loadtexture(18,"images/mariposas.jpg");
     loadtexture(19,"images/patillas.jpg");
+}
 
+/* 
+ * Function that loads paint from the cubism room 
+ */
+void loadCubism(){
     loadtexture(20,"images/abrazo.jpg");
     loadtexture(21,"images/gris.jpg");
     loadtexture(22,"images/mujer.jpg");
     loadtexture(23,"images/palmas.jpeg");
     loadtexture(24,"images/picasso.jpeg");
     loadtexture(25,"images/vino.jpg");
+}
+
+/* 
+ * Function that loads paint from the contemporary room 
+ */
+void loadContemporary(){
 
     loadtexture(26,"images/loco.jpg");
     loadtexture(27,"images/dali.jpg");
-
     loadtexture(29,"images/hojas.jpg");
     loadtexture(28,"images/rara.jpg");
+}
+
+/*
+ * Function that loads the textures from images 
+ */
+ void loadPictures(){
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    //Number of textures to read
+    glGenTextures(30, texName);
+
+    loadRenascement();
+    loadImpresionism();
+    loadFrida();
+    loadCubism();
+    loadContemporary();
+
     loadtexture(30,"images/parking.jpg");
+}
 
-
- }
-
-//Initialization values
+/*
+ * Initialization values for objects, cylinder and lights
+ */ 
 void init(void) {
 
-    
     loadPictures();
 
     qobj = gluNewQuadric();
@@ -826,9 +962,6 @@ void init(void) {
     GLfloat diffuse[] = {1.0,1.0,1.0};
     GLfloat position_room_1[] = { -30.0, 10.0, -20.0, 0.0 };
 
-
-    
-
     GLfloat lmodel_ambient[] = { 1.0,1.0,1.0, 1.0 };
     GLfloat local_view[] = { 0.0 };
 
@@ -836,7 +969,6 @@ void init(void) {
     GLfloat mat_diffuse[] = { 0.8, 0.8, 0.8, 1.0 };
     GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
     GLfloat high_shininess[] = { 100.0 };
-
 
     //Enable depth
     glEnable(GL_DEPTH_TEST);
@@ -870,14 +1002,14 @@ void init(void) {
     glEnable(GL_NORMALIZE);
     
     loadObjects();
-
-    
-    
+  
     //Background colors
     glClearColor(0.529, 0.808, 0.922,0.0);
 }
 
-//Use keyboard letters to do different moves, sorry for the long function tho
+/*
+ * Keyboard function 
+ */
 void keyboard(unsigned char key, int x, int y){
     switch (key) {
         //Rotate the camera
@@ -952,8 +1084,10 @@ void print_materials( GLfloat * ambientColor, GLfloat * diffuseColor, GLfloat * 
 }
 
 
-void HelpDisplay(GLint ww, GLint wh)
-{
+/* 
+ * Function with information to show on the help section
+ */
+void HelpDisplay(GLint ww, GLint wh) {
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -1093,8 +1227,8 @@ void HelpDisplay(GLint ww, GLint wh)
     glEnable(GL_TEXTURE_2D);
 }
 
-void HelpRenderBitmapString(float x, float y, void *font, char *string)
-{
+//Helper of the menu option
+void HelpRenderBitmapString(float x, float y, void *font, char *string) {
     char *c;
     /*  set position to start drawing fonts */
     glRasterPos2f(x, y);
