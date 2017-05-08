@@ -258,7 +258,7 @@ void Reshape(int w, int h) {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     //Perspective view configuration. 0.01 near so the camera can see like an human eye
-    gluPerspective(60.0, (double) w / (double) h, 0.01,1000.0);
+    gluPerspective(60.0, (double) w / (double) h, 0.1,1000.0);
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -584,9 +584,9 @@ void drawParking(){
         glutSolidCube(1.0);
     glPopMatrix();
     //Draw the cars
-    drawObject(car1,75.0,4.0,20.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
-    drawObject(car2,99.0,4.0,34.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
-    drawObject(car3,75.0,4.0,0.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
+    drawObject(car1,75.0,2.0,20.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
+    drawObject(car2,99.0,2.0,34.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
+    drawObject(car3,75.0,2.0,0.0,0.0,1.0,0.0,6.0,6.0,6.0,90.0);
 
     //Iterate to draw the 
     float count = 0.0;
@@ -637,6 +637,7 @@ void paintStatue(float t_x, float t_y, float t_z){
         //First draw the base
         glTranslatef(t_x,t_y,t_z);
         glScalef(1.0,1.3,1.0);
+        print_materials(noMat,doorColor,matSpecular,100.0);
         glutSolidCube(1.0);
         glPushMatrix();
             print_materials(blue,blue,blue,100.0);
@@ -758,7 +759,7 @@ void drawPictures(){
     drawCubism();
     drawContemporary();    
     //Parking
-    drawPaint(120.0,2.0,20.0,30.2,40.0,2.0,1.0,0.0,0.0,90.0,30);
+    drawPaint(120.0,0.5,20.0,30.2,40.0,2.0,1.0,0.0,0.0,90.0,30);
 
 }
 
@@ -784,15 +785,20 @@ void display(void) {
     glPushMatrix();
         //Focus the camera acording to the view movde
         if (VIEW_MODE == inside){
+            //Rotate the camera
+            glRotatef(rotationAngle,0.0,1.0,0.0);
             gluLookAt (camX,camY,camZ,camX,0.0,-120.0, 0.0,1.0, 0.0); 
-            //glRotatef(rotationAngle,0.0,1.0,0.0);
         } else if (VIEW_MODE == outside){
-            gluLookAt (0.0,25.0,85.0,0.0,25.0,0.0,0.0,1.0, 0.0); 
+            gluLookAt (0.0,25.0,85.0,0.0,25.0,0.0,0.0,1.0, 0.0);
+            //Rotate the world 
             glRotatef(rotationAngle,0.0,1.0,0.0);
         }
-        //Function to draw the museum structure
-        drawMuseum();
-        drawPictures();
+        
+        //Draw the museum
+        glPushMatrix();          
+            drawMuseum();
+            drawPictures();
+        glPopMatrix();
 
     glPopMatrix();
     //Show the help
@@ -1120,7 +1126,9 @@ void HelpDisplay(GLint ww, GLint wh) {
     HelpRenderBitmapString(30, linestart +=
                linespace, Help_Font, "h/H to show or hide more information");
     HelpRenderBitmapString(30, linestart +=
-               linespace, Help_Font, "Use arrow keys to move");
+               linespace, Help_Font, "Use arrow keys to move, r/R to rotate");
+    HelpRenderBitmapString(30, linestart += 
+               linespace, Help_Font, "Use right click to change from inside or outside view");
     HelpRenderBitmapString(30, linestart +=
                linespace, Help_Font, "Current location = ");
 
