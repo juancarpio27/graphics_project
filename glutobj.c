@@ -1028,11 +1028,17 @@ void keyboard(unsigned char key, int x, int y){
             glutPostRedisplay();
             break;
         case GLUT_KEY_RIGHT:
-            camX += 1.5;
-            glutPostRedisplay();
+            if (camX + 1.5 < 40){
+                camX += 1.5;
+                glutPostRedisplay();
+            }
+            
             break;
         case GLUT_KEY_LEFT:
-            camX -= 1.5;
+            if (camX - 1.5 > -40){
+                camX -= 1.5;
+                glutPostRedisplay();
+            }
             glutPostRedisplay();
             break;
         case GLUT_KEY_DOWN:
