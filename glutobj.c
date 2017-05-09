@@ -64,7 +64,7 @@ int ww, wh;
 void *Help_Font = GLUT_BITMAP_8_BY_13;
 int linestart = 10;     /* start point on y axis for text lines */
 int linespace = 20;     /* spac betwwen text lines */  
-static GLuint texName[31];   
+static GLuint texName[33];   
 
 /*****
  ** 
@@ -81,6 +81,10 @@ GLfloat matSpecular[] = {1.0, 1.0, 1.0, 1.0}; //white
 GLfloat blue[] = {0.118, 0.565, 1.000,0.4}; //blue
 GLfloat light_blue[] = {0.529, 0.808, 0.980,0.4}; //light_blue
 GLfloat green[] = {0.133, 0.545, 0.133, 0.6}; //green
+
+//Burgers
+GLfloat meatColor[] = {0.545, 0.271, 0.075, 0.6}; //Meat Color
+GLfloat bunColor[] = {0.957, 0.643, 0.376, 0.6}; //bun Color
 
 /*****
  ** 
@@ -385,6 +389,218 @@ void drawObject(GLMmodel *pmodel, float t_x, float t_y, float t_z, float r_x, fl
 
 /*****
  ** 
+ **  Carpio Burger
+ ** 
+ *****/
+
+GLfloat ctrlpoints_carpio[4][4][3] =
+{
+    {
+        {-1.5, -1.5, 0.0},
+        {-0.5, -2.5, 0.0},
+        {0.5, -2.5, 0.0},
+        {1.5, -1.5, 0.0}},
+    {
+        {-2.0, -0.5, 0.0},
+        {-0.5, -0.5, 2.0},
+        {0.5, -0.5, 2.0},
+        {2.0, -0.5, 0.0}},
+    {
+        {-2.0, 0.5, 0.0},
+        {-0.5, 0.5, 2.0},
+        {0.5, 0.5, 2.0},
+        {2.0, 0.5, 0.0}},
+    {
+        {-1.5, 1.5, 0.0},
+        {-0.5, 2.5, 0.0},
+        {0.5, 2.5, 0.0},
+        {1.5, 1.5, 0.0}}
+};
+
+GLfloat ctrlpoints_carpio_bread[4][4][3] =
+{
+    {
+        {-1.5, -1.5, 0.0},
+        {-0.5, -2.5, 0.0},
+        {0.5, -2.5, 0.0},
+        {1.5, -1.5, 0.0}},
+    {
+        {-2.0, -1.5, 0.2},
+        {-0.5, -0.5, 0.4},
+        {0.5, -0.5, 0.4},
+        {2.0, -1.5, 0.2}},
+    {
+        {-2.0, 1.5, 0.2},
+        {-0.5, 0.5, 0.4},
+        {0.5, 0.5, 0.4},
+        {2.0, 1.5, 0.2}},
+    {
+        {-1.5, 1.5, 0.0},
+        {-0.5, 2.5, 0.0},
+        {0.5, 2.5, 0.0},
+        {1.5, 1.5, 0.0}}
+};
+
+GLfloat ctrlpoints_bollo[4][4][3] =
+{
+    {
+        {-1.0, -1.0, 0.0}, //1
+        {-0.5, -1.5, 0.0}, //2
+        {0.5, -1.5, 0.0},  // 3
+        {1.0, -1.0, 0.0}}, // 4
+    {
+        {-1.5, -0.5, 0.0}, //5
+        {-0.5, -0.5, 1.5}, //6
+        {0.5, -0.5, 1.5},  //7
+        {1.5, -0.5, 0.0}}, //8
+    {
+        {-1.5, 0.5, 0.0}, //9
+        {-0.5, 0.5, 1.5}, 
+        {0.5, 0.5, 1.5}, 
+        {1.5, 0.5, 0.0}}, 
+    {
+        {-1.0, 1.0, 0.0},
+        {-0.5, 1.5, 0.0}, 
+        {0.5, 1.5, 0.0},
+        {1.0, 1.0, 0.0}}
+};
+
+GLfloat ctrlpoints_carne[4][4][3] =
+{
+    {
+        {-1.0, -1.0, 0.0}, //1
+        {-0.5, -1.5, 0.0}, //2
+        {0.5, -1.5, 0.0},  // 3
+        {1.0, -1.0, 0.0}}, // 4
+    {
+        {-1.5, -0.5, 0.0}, //5
+        {-0.5, -0.5, 0.5}, //6
+        {0.5, -0.5, 0.5},  //7
+        {1.5, -0.5, 0.0}}, //8
+    {
+        {-1.5, 0.5, 0.0}, //9
+        {-0.5, 0.5, 0.5}, 
+        {0.5, 0.5, 0.5}, 
+        {1.5, 0.5, 0.0}}, 
+    {
+        {-1.0, 1.0, 0.0},
+        {-0.5, 1.5, 0.0}, 
+        {0.5, 1.5, 0.0},
+        {1.0, 1.0, 0.0}}
+};
+
+/* 
+ * Function that draws bezier curve
+ */
+void meats_carpio(){
+    glPushMatrix();
+        print_materials(noMat,meatColor,matSpecular,50.0);
+        glTranslatef(0.0,0.0,-1.7);
+        glScalef(-1.0,-1.0,-1.0);
+        glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,0, 1, 12, 4, &ctrlpoints_carpio_bread[0][0][0]);
+        glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+    glPopMatrix();
+    glPushMatrix();
+        print_materials(noMat,meatColor,matSpecular,50.0);
+        glTranslatef(0.0,0.0,-1.7);
+        glScalef(1.0,1.0,1.0);
+        glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,0, 1, 12, 4, &ctrlpoints_carpio_bread[0][0][0]);
+        glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+    glPopMatrix();
+}
+
+/* 
+ * Function that draws bezier curve
+ */
+void meats_cesar(){
+    glPushMatrix();
+        print_materials(noMat,meatColor,matSpecular,50.0);
+        glTranslatef(0.0,0.0,-1.7);
+        glScalef(-1.0,-1.0,-1.0);
+        glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,0, 1, 12, 4, &ctrlpoints_carne[0][0][0]);
+        glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+    glPopMatrix();
+    glPushMatrix();
+        print_materials(noMat,meatColor,matSpecular,50.0);
+        glTranslatef(0.0,0.0,-1.7);
+        glScalef(1.0,1.0,1.0);
+        glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,0, 1, 12, 4, &ctrlpoints_carne[0][0][0]);
+        glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+    glPopMatrix();
+}
+
+/* 
+ * Function that draws bezier curve
+ * t_x, ty, t_z : translation
+ * s_x, s_y, s_z : scale
+ */
+void drawCarpiosBurger (float t_x, float t_y, float t_z, float s_x, float s_y, float s_z) {
+    glPushMatrix();
+
+        glTranslatef(t_x, t_y, t_z);
+        glScalef(s_x, s_y, s_z);
+        glRotatef(85.0, 1.0, 0.0, 0.0);
+        
+        //FIRST BUN
+        print_materials(noMat,bunColor,matSpecular,50.0);
+
+        glPushMatrix();
+            glTranslatef(0.0,0.0,-1.5);
+            glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,0, 1, 12, 4, &ctrlpoints_carpio[0][0][0]);
+            glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+        glPopMatrix();
+
+        print_materials(noMat,bunColor,matSpecular,50.0);
+
+        glPushMatrix();
+            glTranslatef(0.0,0.0,-2.0);
+            glScalef(-1.0,-1.0,-1.0);
+            glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,0, 1, 12, 4, &ctrlpoints_carpio[0][0][0]);
+            glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+        glPopMatrix();
+
+        meats_carpio();
+        
+    glPopMatrix();
+}
+
+/* 
+ * Function that draws bezier curve
+ * t_x, ty, t_z : translation
+ * s_x, s_y, s_z : scale
+ */
+void drawCesarsBurger (float t_x, float t_y, float t_z, float s_x, float s_y, float s_z) {
+    glPushMatrix();
+
+        glTranslatef(t_x, t_y, t_z);
+        glScalef(s_x, s_y, s_z);
+        glRotatef(85.0, 1.0, 0.0, 0.0);
+        
+        //FIRST BUN
+        print_materials(noMat,bunColor,matSpecular,50.0);
+
+        glPushMatrix();
+            glTranslatef(0.0,0.0,-1.5);
+            glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,0, 1, 12, 4, &ctrlpoints_bollo[0][0][0]);
+            glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+        glPopMatrix();
+
+        print_materials(noMat,bunColor,matSpecular,50.0);
+
+        glPushMatrix();
+            glTranslatef(0.0,0.0,-2.0);
+            glScalef(-1.0,-1.0,-1.0);
+            glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4,0, 1, 12, 4, &ctrlpoints_bollo[0][0][0]);
+            glEvalMesh2(GL_FILL, 0, 20, 0, 20);
+        glPopMatrix();
+
+        meats_cesar();
+        
+    glPopMatrix();
+}
+
+/*****
+ ** 
  **  Museum room
  ** 
  *****/
@@ -461,6 +677,12 @@ void bibliotecaAuditorio() {
     paintStatue(-5.0,1.0,-1.5);
     paintStatue(5.0,1.0,-1.5);
     paintStatue(5.0,1.0,0.5);
+
+    //Draw Burger
+    drawCarpiosBurger(5.0,1.5,0.5,0.2,0.2,0.2);
+    drawCarpiosBurger(-5.0,1.5,-1.5,0.2,0.2,0.2);
+    drawCesarsBurger(-5.0,1.5,0.5,0.2,0.2,0.2);
+    drawCesarsBurger(5.0,1.5,-1.5,0.2,0.2,0.2);
     
     //Draw the library
     drawObject(bookcase,-38.0,5.0,0.0,0.0,1.0,0.0,25.0,12.0,12.0,90.0);
@@ -761,6 +983,9 @@ void drawPictures(){
     //Parking
     drawPaint(120.0,0.5,20.0,30.2,40.0,2.0,1.0,0.0,0.0,90.0,30);
 
+    drawPaint(39.1,4.5,6.0,7.0,3.0,2.0,0.0,1.0,0.0,-90.0,31);
+    drawPaint(33.1,4.5,-9.5,7.0,3.0,2.0,0.0,0.0,0.0,0.0,32);
+
 }
 
 /*
@@ -787,7 +1012,7 @@ void display(void) {
         if (VIEW_MODE == inside){
             //Rotate the camera
             glRotatef(rotationAngle,0.0,1.0,0.0);
-            gluLookAt (camX,camY,camZ,camX,0.0,-120.0, 0.0,1.0, 0.0); 
+            gluLookAt (camX,camY,camZ,camX,0.0,-140.0, 0.0,1.0, 0.0); 
         } else if (VIEW_MODE == outside){
             gluLookAt (0.0,25.0,85.0,0.0,25.0,0.0,0.0,1.0, 0.0);
             //Rotate the world 
@@ -939,7 +1164,7 @@ void loadContemporary(){
  void loadPictures(){
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     //Number of textures to read
-    glGenTextures(30, texName);
+    glGenTextures(32, texName);
 
     loadRenascement();
     loadImpresionism();
@@ -948,6 +1173,9 @@ void loadContemporary(){
     loadContemporary();
 
     loadtexture(30,"images/parking.jpg");
+
+    loadtexture(31,"images/Carpio.png");
+    loadtexture(32,"images/Millan.jpeg");
 }
 
 /*
@@ -1006,6 +1234,11 @@ void init(void) {
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
+
+    glEnable(GL_MAP2_VERTEX_3);
+    glEnable(GL_AUTO_NORMAL);
+    glEnable(GL_NORMALIZE);
+    glMapGrid2f(20, 0.0, 1.0, 20, 0.0, 1.0);
     
     loadObjects();
   
@@ -1144,7 +1377,7 @@ void HelpDisplay(GLint ww, GLint wh) {
                linespace, Help_Font, "Outside view");
         if (show_info){
             HelpRenderBitmapString(30, linestart +=
-            linespace, Help_Font, "Info about the museum");
+            linespace, Help_Font, "Beatifull view :)");
         } 
     } else{
         if (camX >= -10 && camX <= 10 && camZ <= 85 && camZ >= 10) {
@@ -1152,7 +1385,7 @@ void HelpDisplay(GLint ww, GLint wh) {
             linespace, Help_Font, "Entrance road");
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                linespace, Help_Font, "Info about Entrance road");
+                linespace, Help_Font, "You´re about to enter the best museum");
             }   
         }
 
@@ -1161,7 +1394,7 @@ void HelpDisplay(GLint ww, GLint wh) {
             linespace, Help_Font, "Entrance hall");
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                linespace, Help_Font, "Info about Entrance hall");
+                linespace, Help_Font, "You have entered!");
             }   
         }
         else if (camX >= -40 && camX <= -20 && camZ <= -10 && camZ >= -35){
@@ -1169,41 +1402,41 @@ void HelpDisplay(GLint ww, GLint wh) {
             linespace, Help_Font, "Renascement room");
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                linespace, Help_Font, "Info about Renascement room");
+                linespace, Help_Font, "Renaissance art is the painting, sculpture and decorative arts.");
             } 
         }
         else if (camX >= 20 && camX <= 40 && camZ <= -10 && camZ >= -45){
             HelpRenderBitmapString(30, linestart +=
-            linespace, Help_Font, "Cuarto 5");
+            linespace, Help_Font, "Contemporary Art");
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                linespace, Help_Font, "Info about Cuarto 5");
+                linespace, Help_Font, "Pieces of art created by artist that are living the the twenty-first century.");
             } 
         }
         else if (camX >= 20 && camX <= 40 && camZ <= -45 && camZ >= -93){
             HelpRenderBitmapString(30, linestart +=
-            linespace, Help_Font, "Cuarto 6");
+            linespace, Help_Font, "Cubism Room");
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                linespace, Help_Font, "Info about Cuarto 6");
+                linespace, Help_Font, " Cubism in its various forms inspired related movements in music, literature and architecture.");
             } 
         }
 
         else if (camX >= -20 && camX <= 20 && camZ <= -90 && camZ >= -115){
             HelpRenderBitmapString(30, linestart +=
-            linespace, Help_Font, "Cuarto del fondo");
+            linespace, Help_Font, "Frida Khalo");
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                linespace, Help_Font, "Info about Cuarto del fondo");
+                linespace, Help_Font, "Frida Khalo was a Mexican painter, who mostly painted self-portraits.");
             } 
         }
 
         else if (camX >= -20 && camX <= 20 && camZ <= 10 && camZ >= -90){
             HelpRenderBitmapString(30, linestart +=
-            linespace, Help_Font, "Centro cool ");
+            linespace, Help_Font, "Fountain");
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                linespace, Help_Font, "Info about Cuarto del fondo");
+                linespace, Help_Font, "Beutifull place");
             } 
         }
 
@@ -1212,7 +1445,7 @@ void HelpDisplay(GLint ww, GLint wh) {
             linespace, Help_Font, "Impresionism room");
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                linespace, Help_Font, "Info about Impresionism room");
+                linespace, Help_Font, "Movement characterized by relatively small, thin, yet visible brush strokes.");
             } 
         }  
 
@@ -1221,7 +1454,7 @@ void HelpDisplay(GLint ww, GLint wh) {
                linespace, Help_Font, "Out of bounds, please go back to the museum"); 
             if (show_info){
                 HelpRenderBitmapString(30, linestart +=
-                    linespace, Help_Font, "Info about going out of bounds!!!");
+                    linespace, Help_Font, "Carefull about the wolfs");
         } 
         }
     }
